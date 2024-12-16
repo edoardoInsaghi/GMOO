@@ -9,8 +9,8 @@ library(scales)
 
 
 ```{r}
-data = read.csv("results.csv")
-data_noPurge = read.csv("results_noPurge.csv")
+data = read.csv("data/results.csv")
+data_noPurge = read.csv("data/results_noPurge.csv")
 data$Purge = rep("Purge", nrow(data))
 data_noPurge$Purge = rep("No Purge", nrow(data_noPurge))
 results = rbind(data, data_noPurge)
@@ -172,4 +172,52 @@ p = ggplot(data=data, aes(x=Iteration, y=Value, color=FixedValues_PurgeOp)) +
   theme_bw()
 p
 ```
+
+
+```{r}
+
+dataavg = read.csv("data/avg.csv")
+datamax = read.csv("data/max.csv")
+
+base_colors = brewer.pal(4, "Set2")
+colors = c(
+  base_colors[1], 
+  base_colors[2], 
+  base_colors[3], 
+  base_colors[4],
+  muted(base_colors[1]),
+  muted(base_colors[2]),
+  muted(base_colors[3]),
+  muted(base_colors[4])
+)
+
+dataavg = dataavg %>% 
+  mutate(FixedValues_PurgeOp=interaction(as.factor(FixedValues), Purge))
+datamax = datamax %>% 
+  mutate(FixedValues_PurgeOp=interaction(as.factor(FixedValues), Purge))
+
+
+pavg = ggplot(data=dataavg, aes(x=AvgFit, fill=Purge)) +
+  geom_histogram(alpha=0.5) + 
+  labs(title="Distribution of Average fitness after 2000 GA steps",
+     x="Fitness", y="Probability",
+     fill="Purge Op") +
+  facet_wrap(~FixedValues, ncol=2, scales="free") +
+  scale_color_manual(values=colors) + 
+  theme_bw()
+pavg
+
+pmax = ggplot(data=datamax, aes(x=BestFit, fill=Purge)) +
+  geom_density(alpha=0.5) + 
+  labs(title="Distribution of Maximum fitness after 2000 GA steps",
+     x="Fitness", y="Probability",
+     fill="Purge Op") +
+  facet_wrap(~FixedValues, ncol=2, scales="free") +
+  scale_color_manual(values=colors) + 
+  theme_bw()
+pmax
+```
+
+
+
 
