@@ -1,0 +1,175 @@
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(RColorBrewer)
+library(scales)
+```
+
+
+```{r}
+data = read.csv("results.csv")
+data_noPurge = read.csv("results_noPurge.csv")
+data$Purge = rep("Purge", nrow(data))
+data_noPurge$Purge = rep("No Purge", nrow(data_noPurge))
+results = rbind(data, data_noPurge)
+
+p1 = ggplot(data=results, aes(x=FixedValues, y=WinRate, col=Purge)) + 
+  geom_line() + geom_point() + labs(title="Percentage of solved Sudoku Puzzles",
+                                    subtitle="Sample size = 50",
+                                    x="Number of fixed values",
+                                    y="Win Rate") + 
+  theme_bw() + theme(legend.position="none")
+p1
+
+p2 = ggplot(data=results, aes(x=FixedValues, y=AvgIters, col=Purge)) + 
+  geom_line() + geom_point() + labs(title="Average GA iterations for the solved Puzzles",
+                                    x="Number of fixed values",
+                                    y="Average number of Iterations") + 
+  theme_bw()
+p2
+```
+
+```{r}
+avg_fixed10_purgetrue = read.csv("data/avg_fixed10_purgetrue.csv")
+avg_fixed10_purgetrue$PurgeOp = rep(T, 2000)
+avg_fixed10_purgetrue$FixedValues = rep(10, 2000)
+
+avg_fixed10_purgefalse = read.csv("data/avg_fixed10_purgefalse.csv")
+avg_fixed10_purgefalse$PurgeOp = rep(F, 2000)
+avg_fixed10_purgefalse$FixedValues = rep(10, 2000)
+
+avg_fixed20_purgefalse = read.csv("data/avg_fixed20_purgefalse.csv")
+avg_fixed20_purgefalse$PurgeOp = rep(F, 2000)
+avg_fixed20_purgefalse$FixedValues = rep(20, 2000)
+
+avg_fixed20_purgetrue = read.csv("data/avg_fixed20_purgetrue.csv")
+avg_fixed20_purgetrue$PurgeOp = rep(T, 2000)
+avg_fixed20_purgetrue$FixedValues = rep(20, 2000)
+
+avg_fixed30_purgefalse = read.csv("data/avg_fixed30_purgefalse.csv")
+avg_fixed30_purgefalse$PurgeOp = rep(F, 2000)
+avg_fixed30_purgefalse$FixedValues = rep(30, 2000)
+
+avg_fixed30_purgetrue = read.csv("data/avg_fixed30_purgetrue.csv")
+avg_fixed30_purgetrue$PurgeOp = rep(T, 2000)
+avg_fixed30_purgetrue$FixedValues = rep(30, 2000)
+
+avg_fixed40_purgefalse = read.csv("data/avg_fixed40_purgefalse.csv")
+avg_fixed40_purgefalse$PurgeOp = rep(F, 2000)
+avg_fixed40_purgefalse$FixedValues = rep(40, 2000)
+
+avg_fixed40_purgetrue = read.csv("data/avg_fixed40_purgetrue.csv")
+avg_fixed40_purgetrue$PurgeOp = rep(T, 2000)
+avg_fixed40_purgetrue$FixedValues = rep(40, 2000)
+
+
+data = rbind(avg_fixed10_purgefalse,
+             avg_fixed10_purgetrue,
+             avg_fixed20_purgefalse,
+             avg_fixed20_purgetrue,
+             avg_fixed30_purgefalse,
+             avg_fixed30_purgetrue,
+             avg_fixed40_purgefalse,
+             avg_fixed40_purgetrue)
+
+data = data[,-3]
+colnames(data) = c("Iteration", "Value", "PurgeOp", "FixedValues")
+data$FixedValues = as.factor(data$FixedValues)
+data = data %>% 
+  mutate(FixedValues_PurgeOp=interaction(FixedValues, PurgeOp))
+
+base_colors = brewer.pal(4, "Set2")
+colors = c(
+  base_colors[1], 
+  base_colors[2], 
+  base_colors[3], 
+  base_colors[4],
+  muted(base_colors[1]),
+  muted(base_colors[2]),
+  muted(base_colors[3]),
+  muted(base_colors[4])
+)
+
+p = ggplot(data=data, aes(x=Iteration, y=Value, color=FixedValues_PurgeOp)) + 
+  geom_line() + 
+  labs(title="Average Fitness as a function of the GA steps",
+       x="Iteration", y="Average Fitness",
+       subtitle="Average over 30 trajectories",
+       color="Fixed Values / Purge Op") +
+  scale_color_manual(values=colors) + 
+  theme_bw() + theme(legend.position="none")
+p
+```
+
+```{r}
+max_fixed10_purgetrue = read.csv("data/max_fixed10_purgetrue.csv")
+max_fixed10_purgetrue$PurgeOp = rep(T, 2000)
+max_fixed10_purgetrue$FixedValues = rep(10, 2000)
+
+max_fixed10_purgefalse = read.csv("data/max_fixed10_purgefalse.csv")
+max_fixed10_purgefalse$PurgeOp = rep(F, 2000)
+max_fixed10_purgefalse$FixedValues = rep(10, 2000)
+
+max_fixed20_purgefalse = read.csv("data/max_fixed20_purgefalse.csv")
+max_fixed20_purgefalse$PurgeOp = rep(F, 2000)
+max_fixed20_purgefalse$FixedValues = rep(20, 2000)
+
+max_fixed20_purgetrue = read.csv("data/max_fixed20_purgetrue.csv")
+max_fixed20_purgetrue$PurgeOp = rep(T, 2000)
+max_fixed20_purgetrue$FixedValues = rep(20, 2000)
+
+max_fixed30_purgefalse = read.csv("data/max_fixed30_purgefalse.csv")
+max_fixed30_purgefalse$PurgeOp = rep(F, 2000)
+max_fixed30_purgefalse$FixedValues = rep(30, 2000)
+
+max_fixed30_purgetrue = read.csv("data/max_fixed30_purgetrue.csv")
+max_fixed30_purgetrue$PurgeOp = rep(T, 2000)
+max_fixed30_purgetrue$FixedValues = rep(30, 2000)
+
+max_fixed40_purgefalse = read.csv("data/max_fixed40_purgefalse.csv")
+max_fixed40_purgefalse$PurgeOp = rep(F, 2000)
+max_fixed40_purgefalse$FixedValues = rep(40, 2000)
+
+max_fixed40_purgetrue = read.csv("data/max_fixed40_purgetrue.csv")
+max_fixed40_purgetrue$PurgeOp = rep(T, 2000)
+max_fixed40_purgetrue$FixedValues = rep(40, 2000)
+
+data = rbind(max_fixed10_purgefalse,
+             max_fixed10_purgetrue,
+             max_fixed20_purgefalse,
+             max_fixed20_purgetrue,
+             max_fixed30_purgefalse,
+             max_fixed30_purgetrue,
+             max_fixed40_purgefalse,
+             max_fixed40_purgetrue)
+
+colnames(data) = c("Iteration", "Value", "Error", "PurgeOp", "FixedValues")
+data$FixedValues = as.factor(data$FixedValues)
+data = data %>% 
+  mutate(FixedValues_PurgeOp=interaction(FixedValues, PurgeOp))
+
+base_colors = brewer.pal(4, "Set2")
+colors = c(
+  base_colors[1], 
+  base_colors[2], 
+  base_colors[3], 
+  base_colors[4],
+  muted(base_colors[1]),
+  muted(base_colors[2]),
+  muted(base_colors[3]),
+  muted(base_colors[4])
+)
+
+p = ggplot(data=data, aes(x=Iteration, y=Value, color=FixedValues_PurgeOp)) + 
+  geom_line() + 
+  labs(title="Best Fitness as a function of the GA steps",
+       x="Iteration", y="Best Fitness",
+       subtitle="Average over 30 trajectories",
+       color="Fixed Values / Purge Op") +
+  scale_color_manual(values=colors) + 
+  theme_bw()
+p
+```
+
